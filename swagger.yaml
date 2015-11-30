@@ -1,0 +1,369 @@
+swagger: '2.0'
+info:
+  title: Game On
+  description: |
+    A throwback text application.  Check <a href='https://game-on.org'>Game-On.org</a> for more info!
+  version: 1.0.0
+host: game-on.org
+schemes:
+  - https
+basePath: /
+produces:
+  - application/json
+paths:
+  '/concierge/startingRoom':
+    get:
+      summary: Starting Room
+      description: |
+        Returns a starting room for this player.  Called before the player has really navigated around much.
+      tags:
+        - Concierge
+      responses:
+        '200':
+          description: An object describing the relationship to a room.
+          schema:
+            $ref: '#/definitions/RoomConnection'
+  '/concierge/rooms/{roomId}/{exitName}':
+    get:
+      parameters:
+        - name: roomId
+          in: path
+          description: The unique ID of a valid room.
+          required: true
+          type: string
+        - name: exitName
+          in: path
+          description: The name of an exit from the room in {roomId}.
+          required: true
+          type: string
+      summary: Get connected rooms
+      tags:
+        - Concierge
+      description: |
+        Provides connection information to the room that is accessible from this exit.
+      responses:
+        '200':
+          description: An object describing the room available at this exit.
+          schema:
+            $ref: '#/definitions/RoomConnection'
+  '/concierge/rooms/{roomId}':
+    get:
+      parameters:
+        - name: roomId
+          in: path
+          description: The unique ID of a valid room
+          type: string
+          required: true
+      summary: Describe a room.
+      description: |
+        Returns the connection information about a room by ID.
+      tags:
+        - Concierge
+      responses:
+        '200':
+          description: An object describing the room you requested.
+          schema:
+            $ref: '#/definitions/RoomConnection'
+  '/concierge/registerRoom':
+    post:
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: room
+          in: body
+          description: A new room to register with the concierge
+          required: true
+          schema:
+            $ref: '#/definitions/NewRoom'
+      summary: Register a new room.
+      tags:
+        - Concierge
+      responses:
+        '200':
+          description: An object that tells whether the room was registered.
+          schema:
+            $ref: '#/definitions/Response'
+  '/play/players':
+    get:
+      summary: List all players
+      tags:
+        - Player
+      description: |
+        Provides a list of all players who have authenticated.
+      responses:
+        '200':
+          description: The list of players.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Player'
+    post:
+      summary: Create a new player.
+      tags:
+        - Player
+      description: |
+        Creates a new player for future use.
+      parameters:
+        - name: playerInformation
+          in: body
+          description: The new player's information.
+          schema:
+            $ref: '#/definitions/Player'
+          required: true
+      responses:
+        '201':
+          description: Indicates that the player was created successfully.
+        '409':
+          description: Indicates that a player with this ID already exists.
+  '/play/players/{playerId}':
+    get:
+      summary: Retrieve a specific player by ID
+      parameters:
+        - name: playerId
+          in: path
+          description: The unique id of a player to look up
+          type: string
+          required: true
+      tags:
+        - Player
+      description: |
+        Looks up this player by his/her unique ID and provides their information.
+      responses:
+        '200':
+          description: An object representing this player
+          schema:
+            $ref: '#/definitions/Player'
+    put:
+      summary: Updates an existing player.
+      parameters:
+        - name: playerId
+          in: path
+          description: The unique id of a player to look up
+          type: string
+          required: true
+        - name: playerInformation
+          in: body
+          description: The updated list of player's information.
+          schema:
+            $ref: '#/definitions/Player'
+          required: true
+      tags:
+        - Player
+      description: |
+        Updates this existing player with a new set of information.
+      responses:
+        '204':
+          description: Indicating the player has been successfully updated.
+        '404':
+          description: Indicating that the player didn't exist to begin with.
+    delete:
+      summary: Deletes an existing player.
+      parameters:
+        - name: playerId
+          in: path
+          description: The unique id of a player to look up
+          type: string
+          required: true
+      tags:
+        - Player
+      description: |
+        Deletes a player that exists.
+      responses:
+        '200':
+          description: Indicating the player has been successfully deleted.
+        '404':
+          description: Indicating that the player didn't exist to begin with.
+  '/play/auth/verify/{auth}':
+    get:
+      summary: Verifies that an authentication is valid.
+      parameters:
+        - name: auth
+          in: path
+          description: See description for details.
+          type: string
+          required: true
+      tags:
+        - Authorization
+      description: |
+        Takes a path parameter of the form `{AUTH_TYPE}::...`, 
+        which varies depending on the type of authentication used:
+        - **Twitter**: `TWITTER::TOKEN::TOKEN_SECRET::USER_ID`
+        - **Facebook**: `FACEBOOK::ACCESSTOKEN`
+        - **Dummy**: `DUMMY::ACCESSTOKEN`
+        
+        In the `Dummy` case, no authentication will be performed.
+        In the other two cases, you will need a valid access token (and
+        possibly a valid token secret, and user id) for success.
+      responses:
+        '200':
+          description: A response regarding the validity of this authorization.
+          schema:
+            $ref: '#/definitions/ValidityObject'
+        '500':
+          description: Something went wrong on the server.
+        '401':
+          description: Your authentication was invalid.
+        '400':
+          description: Your request was incorrect (didn't match the forms in the description')
+  '/play/auth/introspect/{auth}':
+    get:
+      summary: Shows the details of an oauth collaboration.
+      parameters:
+        - name: auth
+          in: path
+          description: See description for details.
+          type: string
+          required: true
+      tags:
+        - Authorization
+      description: |
+        Takes a path parameter of the form `{AUTH_TYPE}::...`, 
+        which varies depending on the type of authentication used:
+        - **Twitter**: `TWITTER::TOKEN::TOKEN_SECRET::USER_ID`
+        - **Facebook**: `FACEBOOK::ACCESSTOKEN`
+        - **Dummy**: `DUMMY::ACCESSTOKEN`
+        
+        In the `Dummy` case, no authentication will be performed.
+        In the other two cases, you will need a valid access token (and
+        possibly a valid token secret, and user id) for success.
+      responses:
+        '200':
+          description: A response regarding the validity of this authorization.
+          schema:
+            $ref: '#/definitions/IntrospectionObject'
+        '500':
+          description: Something went wrong on the server.
+        '401':
+          description: Your authentication was invalid.
+        '400':
+          description: Your request was incorrect (didn't match the forms in the description')
+  '/play/auth/jwt/{auth}':
+    get:
+      summary: Shows the details of an oauth collaboration.
+      parameters:
+        - name: auth
+          in: path
+          description: See description for details.
+          type: string
+          required: true
+      tags:
+        - Authorization
+      description: |
+        Takes a path parameter of the form `{AUTH_TYPE}::...`, 
+        which varies depending on the type of authentication used:
+        - **Twitter**: `TWITTER::TOKEN::TOKEN_SECRET::USER_ID`
+        - **Facebook**: `FACEBOOK::ACCESSTOKEN`
+        - **Dummy**: `DUMMY::ACCESSTOKEN`
+        
+        In the `Dummy` case, no authentication will be performed.
+        In the other two cases, you will need a valid access token (and
+        possibly a valid token secret, and user id) for success.
+      responses:
+        '200':
+          description: A response regarding the validity of this authorization.
+          schema:
+            $ref: '#/definitions/JWTObject'
+        '500':
+          description: Something went wrong on the server.
+        '401':
+          description: Your authentication was invalid.
+        '400':
+          description: Your request was incorrect (didn't match the forms in the description')
+definitions:
+  RoomConnection:
+    type: object
+    properties:
+      rel:
+        type: object
+        properties:
+          roomId:
+            type: string
+            description: A unique identifier for this room.
+          endpoints:
+            type: array
+            items:
+              type: string
+              description: A WebSocket connection where to talk to this room.
+  NewRoom:
+    type: object
+    properties:
+      roomName:
+        type: string
+        description: The name of this room.
+      exits:
+        type: array
+        description: An array of Exits that describe related rooms.
+        items:
+            $ref: '#/definitions/Exit'
+      attributes:
+        $ref: '#/definitions/Attributes'
+  Player:
+    type: object
+    properties:
+      id:
+        type: string
+        description: |
+          The unique identifier for this player, of the form 'authType':'id'
+      name:
+        type: string
+        description: The name of the human associated with this player.
+      favoriteColor:
+        type: string
+        description: The player is asked their favorite color when they login.
+  Response:
+    type: object
+    properties:
+      response:
+        type: string
+        description: The response from the server.
+  Attributes:
+    type: object
+    properties:
+      endPoint:
+        type: string
+        description: The WebSocket URL for how to interact with this room.
+      startLocation:
+        type: string
+        description:  | 
+          A true or false indicator of whether you can start in this room.
+  Exit:
+    type: object
+    properties:
+      name:
+        type: string
+        description: The name of this exit, so you could "/go" to it.
+      room:
+        type: string
+        description: The unique ID of an associated room.
+      description:
+        type: string
+        description: The description of this exit that appears when the user "/look"s.
+  ValidityObject:
+    type: object
+    properties:
+      valid:
+        type: string
+        description: A true or false indicator of whether the authorization was valid.
+  IntrospectionObject:
+    type: object
+    properties:
+      valid:
+        type: string
+        description: A true or false indicator of whether the authorization was valid.
+      name:
+        type: string
+        description: The name of the token returned by the authentication method.
+      id:
+        type: string
+        description: The id for the user that can be created based on this auth.
+      email:
+        type: string
+        description: This user's email address as gleaned from OAuth.
+  JWTObject:
+    type: object
+    properties:
+      jwt:
+        type: string
+        description: A JSON Web Token that represents an encoded IntrospectionObject.
