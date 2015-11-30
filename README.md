@@ -1,6 +1,6 @@
 # Game On! Swagger API Documentation
 
-This project contains a Game On! room implemented in Node.js
+This project contains the Game On! APIs documented in Swagger.
 
 ## Docker
 
