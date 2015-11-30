@@ -10,7 +10,7 @@ RUN cd /opt ; chmod +x ./forwarder ; tar xvzf logstashneeds.tar ; rm logstashnee
 	cd /opt/www ; tar xvzf swagger-ui.tar ; rm swagger-ui.tar
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
-COPY ./index.html /opt/index.html
+COPY ./index.html /opt/www/index.html
 COPY ./startup.sh /opt/startup.sh
 COPY ./forwarder.conf /opt/forwarder.conf
 
