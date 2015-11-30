@@ -15,4 +15,4 @@ EXPOSE 8080
 
 CMD ["/opt/startup.sh"]
 
-ADD ./src/public/ /opt/www/
+ADD ./swagger.json /opt/www/
