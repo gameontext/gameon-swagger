@@ -25,6 +25,6 @@ echo Stopping the existing container...
 ./docker stop -t 0 gameon-swagger || true
 ./docker rm gameon-swagger || true
 echo Starting the new container...
-./docker run -d -p 8081:8080 -e LOGSTASH_ENDPOINT=$LOGSTASH_ENDPOINT -e LOGSTASH_CERT="$LOGSTASH_CERT" -e LOGSTASH_KEY="$LOGSTASH_KEY" --name=gameon-swagger gameon-swagger
+./docker run -d -p 8081:8080 -e ETCD_ENDPOINT=http://etcd:4001 --name=gameon-swagger gameon-swagger
 
 rm -rf dockercfg
