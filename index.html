@@ -80,11 +80,10 @@
         var key = encodeURIComponent($('#input_apiKey')[0].value);
         if(key && key.trim() != "") {
             var timestamp = new Date().getTime()
-            var queryParams = 'serviceID=roomQuery&stamp=' + timestamp
+            var queryParams = 'serviceID=roomRegistration&stamp=' + timestamp
             log("Timestamp: " + timestamp)
             log("Query Parameters: " + queryParams)
 
-            //var hash = crypto.createHmac('sha256', key).update(queryParams).digest('base64')
             var hash = CryptoJS.HmacSHA256(queryParams, key)
             var hashStr = hash.toString(CryptoJS.enc.Base64)
             var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("apikey", hashStr, "query");
