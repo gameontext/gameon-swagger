@@ -90,9 +90,14 @@
             var timestampAuth = new SwaggerClient.ApiKeyAuthorization("stamp", timestamp, "query");
             var serviceAuth = new SwaggerClient.ApiKeyAuthorization("serviceID", "roomRegistration", "query");
             
-            //window.swaggerUi.api.clientAuthorizations.add("serviceID", serviceAuth);
-            //window.swaggerUi.api.clientAuthorizations.add("stamp", timestampAuth);
-            //window.swaggerUi.api.clientAuthorizations.add("apikey", apiKeyAuth);
+            window.swaggerUi.api.clientAuthorizations.remove("serviceID");
+            window.swaggerUi.api.clientAuthorizations.add("serviceID", serviceAuth);
+			
+            window.swaggerUi.api.clientAuthorizations.remove("stamp")
+            window.swaggerUi.api.clientAuthorizations.add("stamp", timestampAuth);
+            
+            window.swaggerUi.api.clientAuthorizations.remove("apikey")
+            window.swaggerUi.api.clientAuthorizations.add("apikey", apiKeyAuth);
             log("hash: " + hashStr)
             
         }
