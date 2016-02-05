@@ -15,131 +15,13 @@
     ],
     "tags": [
         {
-            "name": "sites"
-        },
-        {
             "name": "map"
         },
         {
-            "name": "concierge"
-        },
-        {
             "name": "player"
-        },
-        {
-            "name": "room"
         }
     ],
     "paths": {
-        "/concierge/startingRoom": {
-            "get": {
-                "summary": "Starting Room",
-                "description": "Returns a starting room for this player.  Called before the player has really navigated around much.\n",
-                "tags": [
-                    "concierge"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "An object describing the relationship to a room.",
-                        "schema": {
-                            "$ref": "#/definitions/ConciergeRoomConnection"
-                        }
-                    }
-                }
-            }
-        },
-        "/concierge/rooms/{roomId}/{exitName}": {
-            "get": {
-                "parameters": [
-                    {
-                        "name": "roomId",
-                        "in": "path",
-                        "description": "The unique ID of a valid room.",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "exitName",
-                        "in": "path",
-                        "description": "The name of an exit from the room in {roomId}.",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "summary": "Get connected rooms",
-                "tags": [
-                    "concierge"
-                ],
-                "description": "Provides connection information to the room that is accessible from this exit.\n",
-                "responses": {
-                    "200": {
-                        "description": "An object describing the room available at this exit.",
-                        "schema": {
-                            "$ref": "#/definitions/ConciergeRoomConnection"
-                        }
-                    }
-                }
-            }
-        },
-        "/concierge/rooms/{roomId}": {
-            "get": {
-                "parameters": [
-                    {
-                        "name": "roomId",
-                        "in": "path",
-                        "description": "The unique ID of a valid room",
-                        "type": "string",
-                        "required": true
-                    }
-                ],
-                "summary": "Describe a room.",
-                "description": "Returns the connection information about a room by ID.\n",
-                "tags": [
-                    "concierge"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "An object describing the room you requested.",
-                        "schema": {
-                            "$ref": "#/definitions/ConciergeRoomConnection"
-                        }
-                    }
-                }
-            }
-        },
-        "/concierge/registerRoom": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "room",
-                        "in": "body",
-                        "description": "A new room to register with the concierge",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ConciergeNewRoom"
-                        }
-                    }
-                ],
-                "summary": "Register a new room.",
-                "tags": [
-                    "concierge"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "An object that tells whether the room was registered.",
-                        "schema": {
-                            "$ref": "#/definitions/ConciergeResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/map/v1/": {
             "get": {
                 "tags": [
@@ -173,8 +55,7 @@
         "/map/v1/sites": {
             "get": {
                 "tags": [
-                    "map",
-                    "sites"
+                    "map"
                 ],
                 "summary": "List sites",
                 "description": "Get a list of registered sites. Use link headers for pagination.",
@@ -209,8 +90,7 @@
             },
             "post": {
                 "tags": [
-                    "map",
-                    "sites"
+                    "map"
                 ],
                 "summary": "Create a room",
                 "description": "When a room is registered, the map will generate the appropriate paths to place the room into the map. The map wll only generate links using standard 2-d compass directions. The 'exits' attribute in the return value describes connected/adjacent sites. ",
@@ -245,8 +125,7 @@
         "/map/v1/sites/{id}": {
             "get": {
                 "tags": [
-                    "map",
-                    "sites"
+                    "map"
                 ],
                 "summary": "Get a specific room",
                 "description": "",
@@ -274,8 +153,7 @@
             },
             "put": {
                 "tags": [
-                    "map",
-                    "sites"
+                    "map"
                 ],
                 "summary": "Update a specific room",
                 "description": "",
@@ -315,8 +193,7 @@
             },
             "delete": {
                 "tags": [
-                    "map",
-                    "sites"
+                    "map"
                 ],
                 "summary": "Delete a specific room",
                 "description": "",
@@ -766,85 +643,6 @@
                 }
             },
             "description": "An exit provides the door and URL required for the player to traverse the path to the next room."
-        },
-        "ConciergeRoomConnection": {
-            "type": "object",
-            "properties": {
-                "rel": {
-                    "type": "object",
-                    "properties": {
-                        "roomId": {
-                            "type": "string",
-                            "description": "A unique identifier for this room."
-                        },
-                        "endpoints": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "description": "A WebSocket connection where to talk to this room."
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "ConciergeNewRoom": {
-            "type": "object",
-            "properties": {
-                "roomName": {
-                    "type": "string",
-                    "description": "The name of this room."
-                },
-                "exits": {
-                    "type": "array",
-                    "description": "An array of Exits that describe related rooms.",
-                    "items": {
-                        "$ref": "#/definitions/ConciergeExit"
-                    }
-                },
-                "attributes": {
-                    "$ref": "#/definitions/ConciergeAttributes"
-                }
-            }
-        },
-        "ConciergeResponse": {
-            "type": "object",
-            "properties": {
-                "response": {
-                    "type": "string",
-                    "description": "The response from the server."
-                }
-            }
-        },
-        "ConciergeAttributes": {
-            "type": "object",
-            "properties": {
-                "endPoint": {
-                    "type": "string",
-                    "description": "The WebSocket URL for how to interact with this room."
-                },
-                "startLocation": {
-                    "type": "string",
-                    "description": "A true or false indicator of whether you can start in this room.\n"
-                }
-            }
-        },
-        "ConciergeExit": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "The name of this exit, so you could \"/go\" to it."
-                },
-                "room": {
-                    "type": "string",
-                    "description": "The unique ID of an associated room."
-                },
-                "description": {
-                    "type": "string",
-                    "description": "The description of this exit that appears when the user \"/look\"s."
-                }
-            }
         },
         "Player": {
             "type": "object",
