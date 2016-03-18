@@ -26,3 +26,4 @@ COPY ./startup.sh /opt/startup.sh
 COPY ./forwarder.conf /opt/forwarder.conf
 
 ADD ./swagger.json /opt/www/
+ADD ./swagger.yaml /opt/www/
