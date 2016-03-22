@@ -36,7 +36,7 @@
       if (url && url.length > 1) {
         url = decodeURIComponent(url[1]);
       } else {
-        url = "https://game-on.org/swagger/swagger.json";
+        url = "https://"+window.location.host+"/swagger/swagger.json";
       }
 
       // Pre load translate...
@@ -53,7 +53,7 @@
               clientId: "your-client-id",
               clientSecret: "your-client-secret-if-required",
               realm: "your-realms",
-              appName: "your-app-name", 
+              appName: "your-app-name",
               scopeSeparator: ","
             });
           }
@@ -88,14 +88,14 @@
             var hashStr = hash.toString(CryptoJS.enc.Base64)
             var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("apikey", hashStr, "query");
             var timestampAuth = new SwaggerClient.ApiKeyAuthorization("stamp", timestamp, "query");
-            
+
             window.swaggerUi.api.clientAuthorizations.remove("stamp")
             window.swaggerUi.api.clientAuthorizations.add("stamp", timestampAuth);
-            
+
             window.swaggerUi.api.clientAuthorizations.remove("apikey")
             window.swaggerUi.api.clientAuthorizations.add("apikey", apiKeyAuth);
             log("hash: " + hashStr)
-            
+
         }
       }
 
