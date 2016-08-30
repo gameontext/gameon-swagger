@@ -12,6 +12,9 @@ mkdir dockercfg ; cd dockercfg
 echo -e $KEY > key.pem
 echo -e $CA_CERT > ca.pem
 echo -e $CERT > cert.pem
+echo Key Hash `echo $KEY | md5sum`
+echo Ca Cert Hash `echo $CA_CERT | md5sum`
+echo Cert Hash `echo $CERT | md5sum`
 cd ..
 wget http://security.ubuntu.com/ubuntu/pool/main/a/apparmor/libapparmor1_2.8.95~2430-0ubuntu5.3_amd64.deb -O libapparmor.deb
 sudo dpkg -i libapparmor.deb
@@ -25,6 +28,6 @@ echo Stopping the existing container...
 ./docker stop -t 0 gameon-swagger || true
 ./docker rm gameon-swagger || true
 echo Starting the new container...
-./docker run -d -p 8081:8080 --link=etcd -e ETCDCTL_ENDPOINT=http://etcd:4001 --name=gameon-swagger gameon-swagger
+./docker run -d -p 8081:8080 --restart=always --link=etcd -e ETCDCTL_ENDPOINT=http://etcd:4001 --name=gameon-swagger gameon-swagger
 
 rm -rf dockercfg
