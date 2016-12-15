@@ -6,6 +6,7 @@ ADD https://download.elastic.co/logstash-forwarder/binaries/logstash-forwarder_l
 ADD https://github.com/swagger-api/swagger-ui/archive/v2.1.3.tar.gz /opt/swagger-ui.tar
 
 COPY ./nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx-a8.conf /etc/nginx/nginx-a8.conf
 COPY ./nginx-nolog.conf /etc/nginx/nginx-nolog.conf
 RUN  apt-get update && apt-get install -y wget && \
 	cd /opt && mkdir www && \
