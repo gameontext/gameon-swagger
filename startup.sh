@@ -55,7 +55,7 @@ if [ "$ETCDCTL_ENDPOINT" != "" ]; then
          echo Running a8 with no security.
          CONF=nginx.conf
        fi
-       a8sidecar --proxy --register nginx -c /etc/nginx/$CONF
+       a8sidecar --register nginx -c /etc/nginx/$CONF
     fi  
     echo Starting the logstash forwarder...
     sed -i s/PLACEHOLDER_LOGHOST/${LOGSTASH_ENDPOINT}/g /opt/forwarder.conf
