@@ -2,7 +2,10 @@
 
 # Configure our link to etcd based on shared volume with secret
 if [ ! -z "$ETCD_SECRET" ]; then
+  echo "Configuring for secure etcd"
   . /data/primordial/setup.etcd.sh /data/primordial $ETCD_SECRET
+else
+  echo "Using local env for any etcd"
 fi
 
 # Configure amalgam8 for this container
