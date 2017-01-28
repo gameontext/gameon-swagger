@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "title": "Game On",
-        "description": "A throwback text application.  Check <a href='https://game-on.org'>Game-On.org</a> for more info!\n",
+        "description": "A throwback text application.  Check <a href='https://gameontext.org'>gameontext.org</a> for more info!\n",
         "version": "1.0.0"
     },
     "host": "game-on.org",
