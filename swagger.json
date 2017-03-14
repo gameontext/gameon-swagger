@@ -5,7 +5,7 @@
         "description": "A throwback text application.  Check <a href='https://gameontext.org'>gameontext.org</a> for more info!\n",
         "version": "1.0.0"
     },
-    "host": "game-on.org",
+    "host": "gameontext.org",
     "schemes": [
         "https"
     ],
