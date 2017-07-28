@@ -32,7 +32,7 @@ if [ "$ETCDCTL_ENDPOINT" != "" ]; then
   export A8_REGISTRY_URL=$(etcdctl get /amalgam8/registryUrl)
   export A8_CONTROLLER_URL=$(etcdctl get /amalgam8/controllerUrl)
   export A8_CONTROLLER_POLL=$(etcdctl get /amalgam8/controllerPoll)
-  JWT=$(etcdctl get /amalgam8/jwt)    
+  JWT=$(etcdctl get /amalgam8/jwt)
 
   # Softlayer needs a logstash endpoint so we set up the server
   # to run in the background and the primary task is running the
@@ -40,13 +40,13 @@ if [ "$ETCDCTL_ENDPOINT" != "" ]; then
   # run it in the foreground
   if [ "$LOGSTASH_ENDPOINT" != "" ]; then
      echo Starting nginx in the background...
-     if [ -z "$A8_REGISTRY_URL" ]; then 
+     if [ -z "$A8_REGISTRY_URL" ]; then
        echo Running without a8.
        #no a8, just run server.
        nginx -c /etc/nginx/nginx.conf
      else
        #a8, configure security, and run via sidecar.
-       if [ ! -z "$JWT" ]; then     
+       if [ ! -z "$JWT" ]; then
          echo Running a8 with security.
          export A8_REGISTRY_TOKEN=$JWT
          export A8_CONTROLLER_TOKEN=$JWT
@@ -56,7 +56,7 @@ if [ "$ETCDCTL_ENDPOINT" != "" ]; then
          CONF=nginx.conf
        fi
        a8sidecar --register nginx -c /etc/nginx/$CONF
-    fi  
+    fi
     echo Starting the logstash forwarder...
     sed -i s/PLACEHOLDER_LOGHOST/${LOGSTASH_ENDPOINT}/g /opt/forwarder.conf
     cd /opt
@@ -71,5 +71,5 @@ if [ "$ETCDCTL_ENDPOINT" != "" ]; then
   fi
 else
   echo No logging host set. Running nginx to standard out...
-  nginx -c /etc/nginx/nginx-nolog.conf
+  a8sidecar --register nginx -c /etc/nginx/nginx-nolog.conf
 fi
