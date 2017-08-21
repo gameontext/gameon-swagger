@@ -38,4 +38,4 @@ CMD ["/opt/startup.sh"]
 HEALTHCHECK \
   --timeout=10s \
   --start-period=40s \
-  CMD wget -q -O /dev/null --no-check-certificate http://localhost:8080/health
+  CMD wget -q -O /dev/null http://localhost:8080/health
