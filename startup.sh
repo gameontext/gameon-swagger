@@ -22,8 +22,6 @@ if [ "$ETCDCTL_ENDPOINT" != "" ]; then
     RC=$?
   done
   echo "etcdctl returned sucessfully, continuing"
-
-  export LOGSTASH_ENDPOINT=$(etcdctl get /logstash/endpoint)
 else
   echo No logging host set. Running nginx to standard out...
 fi
