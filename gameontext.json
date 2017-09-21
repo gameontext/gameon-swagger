@@ -22,943 +22,997 @@
         }
     ],
     "definitions": {
-        "Site": {
-            "type": "object",
-            "required": [
-                "_id",
-                "exits",
-                "info",
-                "owner"
-            ],
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "1",
-                    "description": "Site id",
-                    "readOnly": true
-                },
-                "info": {
-                    "$ref": "#/definitions/RoomInfo"
-                },
-                "exits": {
-                    "$ref": "#/definitions/Exits"
-                },
-                "owner": {
-                    "type": "string",
-                    "description": "Owner"
-                },
-                "coord": {
-                    "$ref": "#/definitions/Coordinates"
-                }
-            },
-            "description": "A room (or suite) is anchored into the map as a site when it is registered. The mapping should remain fairly stable unless a room is removed and re-appears."
+      "Site" : {
+        "type" : "object",
+        "required" : [ "_id", "exits", "info", "owner" ],
+        "properties" : {
+          "_id" : {
+            "type" : "string",
+            "example" : "1",
+            "description" : "Site id",
+            "readOnly" : true
+          },
+          "info" : {
+            "$ref" : "#/definitions/RoomInfo"
+          },
+          "exits" : {
+            "$ref" : "#/definitions/Exits"
+          },
+          "owner" : {
+            "type" : "string",
+            "description" : "Owner"
+          },
+          "created_on" : {
+            "type" : "string",
+            "example" : "2011-12-03T10:15:30Z",
+            "description" : "Date site created in ISO-8601 instant format",
+            "readOnly" : true
+          },
+          "assigned_on" : {
+            "type" : "string",
+            "example" : "2011-12-03T10:15:30Z",
+            "description" : "Date room assigned in ISO-8601 instant format",
+            "readOnly" : true
+          },
+          "coord" : {
+            "$ref" : "#/definitions/Coordinates"
+          },
+          "createdInstant" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "assignedInstant" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
         },
-        "SiteSwap": {
-            "type": "object",
-            "required": [
-                "site1",
-                "site2"
-            ],
-            "properties": {
-                "site1": {
-                    "$ref": "#/definitions/SiteCoordinates"
-                },
-                "site2": {
-                    "$ref": "#/definitions/SiteCoordinates"
-                }
-            }
+        "description" : "A room (or suite) is anchored into the map as a site when it is registered. The mapping should remain fairly stable unless a room is removed and re-appears."
+      },
+      "Exits" : {
+        "type" : "object",
+        "properties" : {
+          "n" : {
+            "$ref" : "#/definitions/Exit"
+          },
+          "w" : {
+            "$ref" : "#/definitions/Exit"
+          },
+          "s" : {
+            "$ref" : "#/definitions/Exit"
+          },
+          "e" : {
+            "$ref" : "#/definitions/Exit"
+          },
+          "u" : {
+            "$ref" : "#/definitions/Exit"
+          },
+          "d" : {
+            "$ref" : "#/definitions/Exit"
+          }
         },
-        "ConnectionDetails": {
-            "type": "object",
-            "required": [
-                "target",
-                "type"
-            ],
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "example": "websocket",
-                    "description": "Connection type"
-                },
-                "target": {
-                    "type": "string",
-                    "example": "wss://secondroom:9008/barn/ws",
-                    "description": "Connection target, usually a URL"
-                },
-                "token": {
-                    "type": "string",
-                    "example": "A-totally-arbitrary-really-long-string",
-                    "description": "A token used for mutual identification between the room and the mediator during the initial handshake when the connection is established (optional)"
-                }
-            },
-            "description": "Connection details used by the mediator to connect to the room on the player's behalf"
+        "description" : "When a room is placed in the map, paths are created between it and other rooms. Each exit provides the door and URL required for the player to traverse the path to the target room."
+      },
+      "Doors" : {
+        "type" : "object",
+        "properties" : {
+          "n" : {
+            "type" : "string",
+            "example" : "A knobbly wooden door with a rough carving or a friendly face",
+            "description" : "North door (140 characters)"
+          },
+          "w" : {
+            "type" : "string",
+            "example" : "A fake wooden door with stickers of friendly faces plastered all over it",
+            "description" : "West door (140 characters)"
+          },
+          "s" : {
+            "type" : "string",
+            "example" : "A warped wooden door with a friendly face branded on the corner",
+            "description" : "South door (140 characters)"
+          },
+          "e" : {
+            "type" : "string",
+            "example" : "A polished wooden door with an inlaid friendly face",
+            "description" : "East door (140 characters)"
+          },
+          "u" : {
+            "type" : "string",
+            "example" : "A scuffed and scratched oaken trap door",
+            "description" : "Door in the ceiling (Up) (140 characters)"
+          },
+          "d" : {
+            "type" : "string",
+            "example" : "A rough-cut particle board hatch",
+            "description" : "Door in the floor (Down) (140 characters)"
+          }
         },
-        "RoomInfo": {
-            "type": "object",
-            "required": [
-                "connectionDetails",
-                "name"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "First Room",
-                    "description": "Short/Terse name of the target room, must be unique within the owner's rooms"
-                },
-                "connectionDetails": {
-                    "$ref": "#/definitions/ConnectionDetails"
-                },
-                "fullName": {
-                    "type": "string",
-                    "example": "The First Room",
-                    "description": "Human-friendly room name"
-                },
-                "description": {
-                    "type": "string",
-                    "example": "A helpful room with doors in every possible direction.",
-                    "description": "Player-friendly room description (140 characters)"
-                },
-                "doors": {
-                    "$ref": "#/definitions/Doors"
-                }
-            },
-            "description": "Mutable information: descriptive elements, service URL, etc."
-        },
-        "Doors": {
-            "type": "object",
-            "properties": {
-                "n": {
-                    "type": "string",
-                    "example": "A knobbly wooden door with a rough carving or a friendly face",
-                    "description": "North door (140 characters)"
-                },
-                "w": {
-                    "type": "string",
-                    "example": "A fake wooden door with stickers of friendly faces plastered all over it",
-                    "description": "West door (140 characters)"
-                },
-                "s": {
-                    "type": "string",
-                    "example": "A warped wooden door with a friendly face branded on the corner",
-                    "description": "South door (140 characters)"
-                },
-                "e": {
-                    "type": "string",
-                    "example": "A polished wooden door with an inlaid friendly face",
-                    "description": "East door (140 characters)"
-                },
-                "u": {
-                    "type": "string",
-                    "example": "A scuffed and scratched oaken trap door",
-                    "description": "Door in the ceiling (Up) (140 characters)"
-                },
-                "d": {
-                    "type": "string",
-                    "example": "A rough-cut particle board hatch",
-                    "description": "Door in the floor (Down) (140 characters)"
-                }
-            },
-            "description": "Descriptions for the doors in the room. These may be used by other rooms to describe the appearance of the door. Keys should be relative to this room (e, w, n, s, u, d). Values are simple string descriptions for the outside of the door. If the string value references a direction at all, it should be the opposite direction:for the East door, the direction mentioned should be West. Descriptions are optional, and will be generated if absent."
-        },
-        "SiteCoordinates": {
-            "type": "object",
-            "required": [
-                "coord",
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string",
-                    "example": "1",
-                    "description": "Site id",
-                    "readOnly": true
-                },
-                "coord": {
-                    "$ref": "#/definitions/Coordinates"
-                }
-            }
-        },
-        "Exit": {
-            "type": "object",
-            "required": [
-                "_id",
-                "connectionDetails",
-                "door",
-                "name"
-            ],
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "2",
-                    "description": "Id of the target room",
-                    "readOnly": true
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Barn",
-                    "description": "Short/Terse name of the target room"
-                },
-                "fullName": {
-                    "type": "string",
-                    "example": "The First Room",
-                    "description": "Human-friendly room name"
-                },
-                "door": {
-                    "type": "string",
-                    "example": "Big red barn door",
-                    "description": "Player-friendly description of the door (provided by the target room or generated by the map)"
-                },
-                "connectionDetails": {
-                    "$ref": "#/definitions/ConnectionDetails"
-                }
-            },
-            "description": "An exit provides the door and URL required for the player to traverse the path to the next room."
-        },
-        "Coordinates": {
-            "type": "object",
-            "required": [
-                "x",
-                "y"
-            ],
-            "properties": {
-                "x": {
-                    "type": "integer",
-                    "format": "int32",
-                    "description": "X coordinate"
-                },
-                "y": {
-                    "type": "integer",
-                    "format": "int32",
-                    "description": "Y coordinate"
-                }
-            }
-        },
-        "Exits": {
-            "type": "object",
-            "properties": {
-                "n": {
-                    "$ref": "#/definitions/Exit"
-                },
-                "w": {
-                    "$ref": "#/definitions/Exit"
-                },
-                "s": {
-                    "$ref": "#/definitions/Exit"
-                },
-                "e": {
-                    "$ref": "#/definitions/Exit"
-                },
-                "u": {
-                    "$ref": "#/definitions/Exit"
-                },
-                "d": {
-                    "$ref": "#/definitions/Exit"
-                }
-            },
-            "description": "When a room is placed in the map, paths are created between it and other rooms. Each exit provides the door and URL required for the player to traverse the path to the target room."
-        },
-        "LocationChange": {
-            "type": "object",
-            "required": [
-                "newLocation",
-                "oldLocation"
-            ],
-            "properties": {
-                "oldLocation": {
-                    "type": "string",
-                    "example": "room_id_1",
-                    "description": "old player location"
-                },
-                "newLocation": {
-                    "type": "string",
-                    "example": "room_id_1",
-                    "description": "new player location"
-                }
-            },
-            "description": "Player location change"
-        },
-        "PlayerArgument": {
-            "type": "object",
-            "required": [
-                "_id",
-                "favoriteColor",
-                "name"
-            ],
-            "properties": {
-                "_id": {
-                    "type": "string",
-                    "example": "oauthProvider:userid",
-                    "description": "Unique player id",
-                    "readOnly": true
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Harriet",
-                    "description": "Player name"
-                },
-                "favoriteColor": {
-                    "type": "string",
-                    "example": "Tangerine",
-                    "description": "Favorite color"
-                }
-            },
-            "description": "Player account information"
+        "description" : "Descriptions for the doors in the room. These may be used by other rooms to describe the appearance of the door. Keys should be relative to this room (e, w, n, s, u, d). Values are simple string descriptions for the outside of the door. If the string value references a direction at all, it should be the opposite direction:for the East door, the direction mentioned should be West. Descriptions are optional, and will be generated if absent."
+      },
+      "Coordinates" : {
+        "type" : "object",
+        "required" : [ "x", "y" ],
+        "properties" : {
+          "x" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "X coordinate"
+          },
+          "y" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Y coordinate"
+          }
         }
+      },
+      "ConnectionDetails" : {
+        "type" : "object",
+        "required" : [ "target", "type" ],
+        "properties" : {
+          "type" : {
+            "type" : "string",
+            "example" : "websocket",
+            "description" : "Connection type"
+          },
+          "target" : {
+            "type" : "string",
+            "example" : "ws://secondroom:9008/barn/ws",
+            "description" : "Connection target, usually a URL"
+          },
+          "token" : {
+            "type" : "string",
+            "example" : "A-totally-arbitrary-really-long-string",
+            "description" : "A token used for mutual identification between the room and the mediator during the initial handshake when the connection is established (optional)"
+          },
+          "healthUrl" : {
+            "type" : "string",
+            "example" : "http://secondroom:9008/barn/health",
+            "description" : "Health Check URL"
+          }
+        },
+        "description" : "Connection details used by the mediator to connect to the room on the player's behalf"
+      },
+      "RoomInfo" : {
+        "type" : "object",
+        "required" : [ "connectionDetails", "name" ],
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "example" : "First Room",
+            "description" : "Short/Terse name of the target room, must be unique within the owner's rooms"
+          },
+          "connectionDetails" : {
+            "$ref" : "#/definitions/ConnectionDetails"
+          },
+          "fullName" : {
+            "type" : "string",
+            "example" : "The First Room",
+            "description" : "Human-friendly room name"
+          },
+          "description" : {
+            "type" : "string",
+            "example" : "A helpful room with doors in every possible direction.",
+            "description" : "Player-friendly room description (140 characters)"
+          },
+          "repositoryUrl" : {
+            "type" : "string",
+            "example" : "https://github.com/your-fork",
+            "description" : "Public Repository URL"
+          },
+          "doors" : {
+            "$ref" : "#/definitions/Doors"
+          }
+        },
+        "description" : "Mutable information: descriptive elements, service URL, etc."
+      },
+      "Exit" : {
+        "type" : "object",
+        "required" : [ "_id", "connectionDetails", "door", "name" ],
+        "properties" : {
+          "_id" : {
+            "type" : "string",
+            "example" : "2",
+            "description" : "Id of the target room",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "Barn",
+            "description" : "Short/Terse name of the target room"
+          },
+          "fullName" : {
+            "type" : "string",
+            "example" : "The First Room",
+            "description" : "Human-friendly room name"
+          },
+          "door" : {
+            "type" : "string",
+            "example" : "Big red barn door",
+            "description" : "Player-friendly description of the door (provided by the target room or generated by the map)"
+          },
+          "connectionDetails" : {
+            "$ref" : "#/definitions/ConnectionDetails"
+          }
+        },
+        "description" : "An exit provides the door and URL required for the player to traverse the path to the next room."
+      },
+      "PlayerResponse" : {
+        "type" : "object",
+        "required" : [ "_id", "favoriteColor", "location", "name" ],
+        "properties" : {
+          "_id" : {
+            "type" : "string",
+            "example" : "oauthProvider:userid",
+            "description" : "Unique player id",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "Harriet",
+            "description" : "Player name"
+          },
+          "favoriteColor" : {
+            "type" : "string",
+            "example" : "Tangerine",
+            "description" : "Favorite color"
+          },
+          "location" : {
+            "description" : "Player Location",
+            "$ref" : "#/definitions/PlayerLocation"
+          },
+          "credentials" : {
+            "description" : "Player Credentials",
+            "$ref" : "#/definitions/PlayerCredentials"
+          }
+        },
+        "description" : "Player account information"
+      },
+      "LocationChange" : {
+        "type" : "object",
+        "required" : [ "newLocation", "oldLocation" ],
+        "properties" : {
+          "oldLocation" : {
+            "type" : "string",
+            "example" : "room_id_1",
+            "description" : "old player location"
+          },
+          "newLocation" : {
+            "type" : "string",
+            "example" : "room_id_1",
+            "description" : "new player location"
+          }
+        },
+        "description" : "Player location change"
+      },
+      "PlayerArgument" : {
+        "type" : "object",
+        "required" : [ "_id", "favoriteColor", "name" ],
+        "properties" : {
+          "_id" : {
+            "type" : "string",
+            "example" : "oauthProvider:userid",
+            "description" : "Unique player id",
+            "readOnly" : true
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "Harriet",
+            "description" : "Player name"
+          },
+          "favoriteColor" : {
+            "type" : "string",
+            "example" : "Tangerine",
+            "description" : "Favorite color"
+          }
+        },
+        "description" : "Player account information"
+      },
+      "PlayerLocation" : {
+        "type" : "object",
+        "required" : [ "location" ],
+        "properties" : {
+          "location" : {
+            "type" : "string",
+            "example" : "room_id_1",
+            "description" : "current player location"
+          }
+        },
+        "description" : "Player location"
+      },
+      "PlayerCredentials" : {
+        "type" : "object",
+        "required" : [ "sharedSecret" ],
+        "properties" : {
+          "sharedSecret" : {
+            "type" : "string",
+            "example" : "fjhre8h49hf438u9h45",
+            "description" : "shared secret for player"
+          },
+          "email" : {
+            "type" : "string",
+            "example" : "myroomisbroken@gmail.com",
+            "description" : "contact email for player"
+          }
+        },
+        "description" : "Player credentials"
+      },
+      "ErrorResponse" : {
+        "type" : "object",
+        "required" : [ "message", "status" ],
+        "properties" : {
+          "status" : {
+            "type" : "integer",
+            "format" : "int32",
+            "example" : 400,
+            "description" : "Http Response code (for reference)"
+          },
+          "message" : {
+            "type" : "string",
+            "example" : "Unauthenticated client",
+            "description" : "Error message"
+          },
+          "more_info" : {
+            "type" : "string",
+            "example" : "Room owner could not be determined.",
+            "description" : "Optional additional information"
+          }
+        },
+        "description" : "Error response"
+      }
     },
     "paths": {
-        "/map/v1/": {
-            "get": {
-                "tags": [
-                    "map"
-                ],
-                "operationId": "mapBasicGet",
-                "parameters": [],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
+      "/map/v1/sites" : {
+        "get" : {
+          "tags" : [ "map" ],
+          "summary" : "List sites",
+          "description" : "Get a list of registered sites. Use link headers for pagination.",
+          "operationId" : "listAll",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "owner",
+            "in" : "query",
+            "description" : "filter by owner",
+            "required" : false,
+            "type" : "string"
+          }, {
+            "name" : "name",
+            "in" : "query",
+            "description" : "filter by name",
+            "required" : false,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "$ref" : "#/definitions/Site"
                 }
-            }
-        },
-        "/map/v1/health": {
-            "get": {
-                "tags": [
-                    "map"
-                ],
-                "summary": "Check application health",
-                "description": "",
-                "operationId": "mapHealthCheck",
-                "parameters": [],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "/map/v1/sites": {
-            "get": {
-                "tags": [
-                    "map"
-                ],
-                "summary": "List sites",
-                "description": "Get a list of registered sites. Use link headers for pagination.",
-                "operationId": "listAll",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "owner",
-                        "in": "query",
-                        "description": "filter by owner",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "name",
-                        "in": "query",
-                        "description": "filter by name",
-                        "required": false,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "204": {
-                        "description": "No results found"
-                    }
-                }
+              }
             },
-            "post": {
-                "tags": [
-                    "map"
-                ],
-                "summary": "Create a room",
-                "description": "When a room is registered, the map will generate the appropriate paths to place the room into the map. The map wll only generate links using standard 2-d compass directions. The 'exits' attribute in the return value describes connected/adjacent sites.",
-                "operationId": "createRoom",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "New room attributes",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/RoomInfo"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Site"
-                        }
-                    }
-                }
+            "204" : {
+              "description" : "No results found"
             }
+          }
         },
-        "/map/v1/sites/{id}": {
-            "get": {
-                "tags": [
-                    "map"
-                ],
-                "summary": "Get a specific room",
-                "description": "",
-                "operationId": "getRoom",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target room id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Site"
-                        }
-                    }
-                }
+        "post" : {
+          "tags" : [ "map" ],
+          "summary" : "Create a room",
+          "description" : "When a room is registered, the map will generate the appropriate paths to place the room into the map. The map wll only generate links using standard 2-d compass directions. The 'exits' attribute in the return value describes connected/adjacent sites. ",
+          "operationId" : "createRoom",
+          "consumes" : [ "application/json" ],
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "in" : "body",
+            "name" : "body",
+            "description" : "New room attributes",
+            "required" : true,
+            "schema" : {
+              "$ref" : "#/definitions/RoomInfo"
+            }
+          } ],
+          "responses" : {
+            "201" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/Site"
+              }
             },
-            "put": {
-                "tags": [
-                    "map"
-                ],
-                "summary": "Update a specific room",
-                "description": "",
-                "operationId": "updateRoom",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target room id",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Updated room attributes",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/RoomInfo"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "$ref": "#/definitions/Site"
-                        }
-                    }
-                }
+            "400" : {
+              "description" : "Bad Request; details will explain what should be corrected before retrying",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             },
-            "delete": {
-                "tags": [
-                    "map"
-                ],
-                "summary": "Delete a specific room",
-                "description": "",
-                "operationId": "deleteRoom",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target room id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Delete successful"
-                    }
-                }
-            }
-        },
-        "/map/v1/swapSites": {
-            "put": {
-                "tags": [
-                    "map"
-                ],
-                "summary": "Swap the coordinates of two sites",
-                "description": "Sites will exchange position in the map, but their contents (including connected players), will be undisturbed. The 'exits' be re-assigned.",
-                "operationId": "swapSites",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Sites to swap",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/SiteSwap"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Site"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/players/v1/": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Ping",
-                "operationId": "playerBasicGet",
-                "parameters": [],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
-            }
-        },
-        "/players/v1/accounts": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "List all players",
-                "description": "Get a list of registered players. Use link headers for pagination.",
-                "operationId": "getAllPlayers",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "204": {
-                        "description": "Save conflict"
-                    }
-                }
+            "403" : {
+              "description" : "Caller is not authorized to create room",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             },
-            "post": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Create a new player account",
-                "description": "",
-                "operationId": "createPlayer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "required": false,
-                        "schema": {
-                            "$ref": "#/definitions/PlayerArgument"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Successful"
-                    },
-                    "403": {
-                        "description": "Authenticated user id must match new player id"
-                    },
-                    "409": {
-                        "description": "Save conflict"
-                    }
-                }
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             }
+          }
         },
-        "/players/v1/accounts/{id}": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Get a specific player",
-                "description": "",
-                "operationId": "getPlayerInformation",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target player id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    }
-                }
+        "parameters" : [ ]
+      },
+      "/map/v1/sites/{id}" : {
+        "get" : {
+          "tags" : [ "map" ],
+          "summary" : "Get a specific room",
+          "description" : "",
+          "operationId" : "getRoom",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target room id",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/Site"
+              }
             },
-            "put": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Update a specific player",
-                "description": "",
-                "operationId": "updatePlayer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target player id",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "description": "Updated player attributes",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/PlayerArgument"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "403": {
-                        "description": "Caller is not authorized to update specified player"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    },
-                    "409": {
-                        "description": "Save conflict"
-                    }
-                }
+            "404" : {
+              "description" : "No results found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "put" : {
+          "tags" : [ "map" ],
+          "summary" : "Update a specific room",
+          "description" : "",
+          "operationId" : "updateRoom",
+          "consumes" : [ "application/json" ],
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target room id",
+            "required" : true,
+            "type" : "string"
+          }, {
+            "in" : "body",
+            "name" : "body",
+            "description" : "Updated room attributes",
+            "required" : true,
+            "schema" : {
+              "$ref" : "#/definitions/RoomInfo"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/Site"
+              }
             },
-            "delete": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Delete a specific player",
-                "description": "",
-                "operationId": "removePlayer",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target player id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successful"
-                    },
-                    "403": {
-                        "description": "Caller is not authorized to delete specified player"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    },
-                    "409": {
-                        "description": "Save conflict"
-                    }
-                }
-            }
-        },
-        "/players/v1/accounts/{id}/credentials": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Get credentials for a specific player",
-                "description": "",
-                "operationId": "getPlayerCredentials",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target player id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    }
-                }
-            }
-        },
-        "/players/v1/accounts/{id}/credentials/sharedSecret": {
-            "put": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Update player shared secret",
-                "description": "",
-                "operationId": "updatePlayerApiKey",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "403": {
-                        "description": "Caller is not authorized to  update player shared secret"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    },
-                    "409": {
-                        "description": "Save conflict"
-                    }
-                }
-            }
-        },
-        "/players/v1/accounts/{id}/location": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Get a specific player location",
-                "description": "returns a map of player id to location, location can be null if historically the player has never had a location stored.",
-                "operationId": "getPlayerLocation",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "target player id",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    }
-                }
+            "400" : {
+              "description" : "Bad Request; details will explain what should be corrected before retrying",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             },
-            "put": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Update player location",
-                "description": "",
-                "operationId": "updatePlayerLocation",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "in": "body",
-                        "name": "body",
-                        "required": false,
-                        "schema": {
-                            "$ref": "#/definitions/LocationChange"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "403": {
-                        "description": "Caller is not authorized to update player location"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    },
-                    "409": {
-                        "description": "Save conflict"
-                    }
-                }
+            "403" : {
+              "description" : "Caller is not authorized to update room",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "404" : {
+              "description" : "No results found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             }
+          }
         },
-        "/players/v1/color": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Get ten generated colors",
-                "description": "",
-                "operationId": "getColors",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    }
-                }
+        "delete" : {
+          "tags" : [ "map" ],
+          "summary" : "Delete a specific room",
+          "description" : "",
+          "operationId" : "deleteRoom",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target room id",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "204" : {
+              "description" : "Successful"
+            },
+            "400" : {
+              "description" : "Bad Request; details will explain what should be corrected before retrying",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "403" : {
+              "description" : "Caller is not authorized to delete room",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "404" : {
+              "description" : "No results found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             }
+          }
         },
-        "/players/v1/health": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Check application health",
-                "operationId": "playerHealthCheck",
-                "parameters": [],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
+        "parameters" : [ ]
+      },
+      "/players/v1/accounts" : {
+        "get" : {
+          "tags" : [ "players" ],
+          "summary" : "List all players",
+          "description" : "Get a list of registered players. Use link headers for pagination.",
+          "operationId" : "getAllPlayers",
+          "produces" : [ "application/json" ],
+          "parameters" : [ ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerResponse"
+              }
+            },
+            "204" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             }
+          }
         },
-        "/players/v1/info": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Application information",
-                "description": "",
-                "operationId": "info",
-                "parameters": [],
-                "responses": {
-                    "default": {
-                        "description": "successful operation"
-                    }
-                }
+        "post" : {
+          "tags" : [ "players" ],
+          "summary" : "Create a new player account",
+          "description" : "",
+          "operationId" : "createPlayer",
+          "consumes" : [ "application/json" ],
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "in" : "body",
+            "name" : "body",
+            "required" : false,
+            "schema" : {
+              "$ref" : "#/definitions/PlayerArgument"
             }
+          } ],
+          "responses" : {
+            "201" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerResponse"
+              }
+            },
+            "403" : {
+              "description" : "Authenticated user id must match new player id",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
         },
-        "/players/v1/locations": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Get player locations.",
-                "description": "can pass optional params playerId to retrieve only location for player, or siteId to retrieve players in a location, combining the two will return an empty map if the player is not in that location",
-                "operationId": "getPlayerLocationInformation",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "playerId",
-                        "in": "query",
-                        "description": "target player id",
-                        "required": false,
-                        "type": "string"
-                    },
-                    {
-                        "name": "siteId",
-                        "in": "query",
-                        "description": "target site id",
-                        "required": false,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    },
-                    "404": {
-                        "description": "Player not found"
-                    }
-                }
+        "parameters" : [ ]
+      },
+      "/players/v1/accounts/{id}" : {
+        "get" : {
+          "tags" : [ "players" ],
+          "summary" : "Get a specific player",
+          "description" : "",
+          "operationId" : "getPlayerInformation",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target player id",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerResponse"
+              }
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
             }
+          }
         },
-        "/players/v1/name": {
-            "get": {
-                "tags": [
-                    "players"
-                ],
-                "summary": "Get ten randomly generated player names",
-                "description": "",
-                "operationId": "getNames",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "Successful"
-                    }
-                }
+        "put" : {
+          "tags" : [ "players" ],
+          "summary" : "Update a specific player",
+          "description" : "",
+          "operationId" : "updatePlayer",
+          "consumes" : [ "application/json" ],
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target player id",
+            "required" : true,
+            "type" : "string"
+          }, {
+            "in" : "body",
+            "name" : "body",
+            "description" : "Updated player attributes",
+            "required" : true,
+            "schema" : {
+              "$ref" : "#/definitions/PlayerArgument"
             }
-        }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerResponse"
+              }
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "403" : {
+              "description" : "Caller is not authorized to update specified player",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "delete" : {
+          "tags" : [ "players" ],
+          "summary" : "Delete a specific player",
+          "description" : "",
+          "operationId" : "removePlayer",
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target player id",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "204" : {
+              "description" : "Successful"
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "403" : {
+              "description" : "Caller is not authorized to delete specified player",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      },
+      "/players/v1/accounts/{id}/credentials" : {
+        "get" : {
+          "tags" : [ "players" ],
+          "summary" : "Get credentials for a specific player",
+          "description" : "",
+          "operationId" : "getPlayerCredentials",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target player id",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerCredentials"
+              }
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      },
+      "/players/v1/accounts/{id}/credentials/email" : {
+        "put" : {
+          "tags" : [ "players" ],
+          "summary" : "Update player contact email",
+          "description" : "",
+          "operationId" : "updatePlayerEmail",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful"
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "403" : {
+              "description" : "Caller is not authorized to  update player contact email",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      },
+      "/players/v1/accounts/{id}/credentials/sharedSecret" : {
+        "put" : {
+          "tags" : [ "players" ],
+          "summary" : "Update player shared secret",
+          "description" : "",
+          "operationId" : "updatePlayerApiKey",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerArgument"
+              }
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "403" : {
+              "description" : "Caller is not authorized to  update player shared secret",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      },
+      "/players/v1/accounts/{id}/location" : {
+        "get" : {
+          "tags" : [ "players" ],
+          "summary" : "Get a specific player location",
+          "description" : "returns a map of player id to location, location can be null if historically the player has never had a location stored.",
+          "operationId" : "getPlayerLocation",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "description" : "target player id",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerLocation"
+              }
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "put" : {
+          "tags" : [ "players" ],
+          "summary" : "Update player location",
+          "description" : "",
+          "operationId" : "updatePlayerLocation",
+          "consumes" : [ "application/json" ],
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "id",
+            "in" : "path",
+            "required" : true,
+            "type" : "string"
+          }, {
+            "in" : "body",
+            "name" : "body",
+            "required" : false,
+            "schema" : {
+              "$ref" : "#/definitions/LocationChange"
+            }
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "$ref" : "#/definitions/PlayerLocation"
+              }
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "409" : {
+              "description" : "Save conflict",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            },
+            "403" : {
+              "description" : "Caller is not authorized to update player location",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      },
+      "/players/v1/color" : {
+        "get" : {
+          "tags" : [ "players" ],
+          "summary" : "Get ten generated colors",
+          "description" : "",
+          "operationId" : "getColors",
+          "produces" : [ "application/json" ],
+          "parameters" : [ ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      },
+      "/players/v1/locations" : {
+        "get" : {
+          "tags" : [ "players" ],
+          "summary" : "Get player locations.",
+          "description" : "can pass optional params playerId to retrieve only location for player, or siteId to retrieve players in a location, combining the two will return an empty map if the player is not in that location",
+          "operationId" : "getPlayerLocationInformation",
+          "produces" : [ "application/json" ],
+          "parameters" : [ {
+            "name" : "playerId",
+            "in" : "query",
+            "description" : "target player id",
+            "required" : false,
+            "type" : "string"
+          }, {
+            "name" : "siteId",
+            "in" : "query",
+            "description" : "target site id",
+            "required" : false,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful"
+            },
+            "404" : {
+              "description" : "Player not found",
+              "schema" : {
+                "$ref" : "#/definitions/ErrorResponse"
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      },
+      "/players/v1/name" : {
+        "get" : {
+          "tags" : [ "players" ],
+          "summary" : "Get ten randomly generated player names",
+          "description" : "",
+          "operationId" : "getNames",
+          "produces" : [ "application/json" ],
+          "parameters" : [ ],
+          "responses" : {
+            "200" : {
+              "description" : "Successful",
+              "schema" : {
+                "type" : "array",
+                "items" : {
+                  "type" : "string"
+                }
+              }
+            }
+          }
+        },
+        "parameters" : [ ]
+      }
     }
 }
