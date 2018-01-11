@@ -23,7 +23,7 @@ COPY ./nginx-nolog.conf  /etc/nginx/nginx-nolog.conf
 COPY ./startup.sh /opt/startup.sh
 COPY ./forwarder.conf /opt/forwarder.conf
 
-ENV VERSION=3.1.6
+ENV VERSION=3.4.3
 
 RUN mkdir -p /opt/www \
   && wget https://github.com/swagger-api/swagger-ui/archive/v${VERSION}.tar.gz -q \
