@@ -1,44 +1,19 @@
-#!/bin/bash
+#!/bin/sh
 
-# Configure our link to etcd based on shared volume with secret
-if [ ! -z "$ETCD_SECRET" ]; then
-  echo "Configuring for secure etcd"
-  . /data/primordial/setup.etcd.sh /data/primordial $ETCD_SECRET
+if [ "${GAMEON_MODE}" == "development" ]
+then
+  # turn off sendfile for local development
+  sed -i -e "s/sendfile: .*$/sendfile: off/" /etc/nginx/nginx.conf
 else
-  echo "Using local env for any etcd"
+  # turn on sendfile
+  sed -i -e "s/sendfile: .*$/sendfile: on/" /etc/nginx/nginx.conf
 fi
 
-if [ "$ETCDCTL_ENDPOINT" != "" ]; then
-  echo Setting up etcd...
-  echo "** Testing etcd is accessible"
-  etcdctl --debug ls
-  RC=$?
-
-  while [ $RC -ne 0 ]; do
-    sleep 15
-    # recheck condition
-    echo "** Re-testing etcd connection"
-    etcdctl --debug ls
-    RC=$?
-  done
-  echo "etcdctl returned sucessfully, continuing"
+if [ "${GAMEON_LOG_FORMAT}" == "json" ]
+then
+  sed -i -e "s/access\.log .*$/access.log json_combined;/" /etc/nginx/nginx.conf
 else
-  echo No logging host set. Running nginx to standard out...
+  sed -i -e "s/access\.log .*$/access.log combined;/" /etc/nginx/nginx.conf
 fi
 
-if [ "$LOGSTASH_ENDPOINT" != "" ]; then
-  echo Starting nginx in the background...
-  nginx -c /etc/nginx/nginx.conf
-
-  echo Starting the logstash forwarder...
-  sed -i s/PLACEHOLDER_LOGHOST/${LOGSTASH_ENDPOINT}/g /opt/forwarder.conf
-  cd /opt
-  chmod +x ./forwarder
-  etcdctl get /logstash/cert > logstash-forwarder.crt
-  etcdctl get /logstash/key > logstash-forwarder.key
-  sleep 0.5
-  ./forwarder --config ./forwarder.conf
-else
-  echo No logging host set. Running nginx to standard out...
-  nginx -c /etc/nginx/nginx-nolog.conf
-fi
+nginx
