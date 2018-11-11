@@ -326,11 +326,6 @@
             "type" : "string",
             "example" : "fjhre8h49hf438u9h45",
             "description" : "shared secret for player"
-          },
-          "email" : {
-            "type" : "string",
-            "example" : "myroomisbroken@gmail.com",
-            "description" : "contact email for player"
           }
         },
         "description" : "Player credentials"
@@ -769,45 +764,6 @@
             },
             "404" : {
               "description" : "Player not found",
-              "schema" : {
-                "$ref" : "#/definitions/ErrorResponse"
-              }
-            }
-          }
-        },
-        "parameters" : [ ]
-      },
-      "/players/v1/accounts/{id}/credentials/email" : {
-        "put" : {
-          "tags" : [ "players" ],
-          "summary" : "Update player contact email",
-          "description" : "",
-          "operationId" : "updatePlayerEmail",
-          "produces" : [ "application/json" ],
-          "parameters" : [ {
-            "name" : "id",
-            "in" : "path",
-            "required" : true,
-            "type" : "string"
-          } ],
-          "responses" : {
-            "200" : {
-              "description" : "Successful"
-            },
-            "404" : {
-              "description" : "Player not found",
-              "schema" : {
-                "$ref" : "#/definitions/ErrorResponse"
-              }
-            },
-            "409" : {
-              "description" : "Save conflict",
-              "schema" : {
-                "$ref" : "#/definitions/ErrorResponse"
-              }
-            },
-            "403" : {
-              "description" : "Caller is not authorized to  update player contact email",
               "schema" : {
                 "$ref" : "#/definitions/ErrorResponse"
               }

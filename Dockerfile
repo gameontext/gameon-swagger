@@ -15,8 +15,8 @@ RUN mkdir -p /opt/www \
 COPY ./lib/crypto-js/* /opt/www/lib/crypto-js/
 COPY ./index.html /opt/www/index.html
 
-ADD ./gameontext.json /opt/www/
-ADD ./gameontext.yaml /opt/www/
+COPY ./gameontext.json /opt/www/
+COPY ./gameontext.yaml /opt/www/
 
 EXPOSE 8080
 
